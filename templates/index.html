@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <label for="">Subir tabela pdf</label>
+    <br>
+    <input id="file" type="file" />
+    <br>
+    <br>
+
+    <label for="">Insira o numero da coluna da razão social</label>
+    <br>
+    <input id="coluna" type="number" value="1" />
+    <br>
+    <br>
+
+    <button onclick="enviar_arquivo()">Enviar</button>
+    <hr>
+    <br>
+
+    <label for="">Logs do processamento</label>
+    <br>
+    <div id="messages" style="height:200px;width:800px;overflow:auto;" name=""></div>
+    <hr>
+    
+    <label for="">Pesquisar por razao social</label>
+    <input id="razao" type="text">
+    <button onclick="p()">pesquisar</button>
+
+    <script>
+
+        function obter() {
+            fetch(`/razao_social?nome=${document.querySelector('#razao').value}`,  {
+                method: 'GET'
+            }).then(async res => {
+
+                if(res.ok) {
+                    const json = await res.json() 
+                    console.log(json)            
+                }
+            })
+        }
+
+        function addlog(m) {
+            const s = document.querySelector('#messages')
+            s.innerHTML = `<p>${m}</p>` + s.innerHTML
+        }
+
+        function enviar_arquivo() {
+            const f = new FormData()
+            f.append('file', document.querySelector('#file').files[0])
+            addlog("extraindo arquivo")
+            fetch(`/extrair_dados?column=${document.querySelector('#coluna').value}`,  {
+                method: 'POST',
+                body: f
+            }).then(res => {
+
+                if(res.ok) {
+                    addlog("concluido")
+                } else {
+                    addlog("nao foi concluido")
+                }
+            })
+        }
+    </script>
+</body>
+
+</html>
